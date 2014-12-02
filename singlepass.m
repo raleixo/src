@@ -82,20 +82,28 @@ for jj=1:(1-overlap)*winsize:size(A,1)-winsize+1
                 R=xcorrf2(C,D)./(winsize*winsize*stad1*stad2);
                 % Correct for displacement bias
                 R=R./BiCor;    
-                % Locate the highest point   
+                % Locate the highest point
+                %save(['C:\RAleixo\PI-PTV\testes\' 'var.mat'],'R','BiCor','winsize');
+                %%check how many maxima
+                
                 [y1,x1]=find(R==max(max(R(0.5*winsize+2:1.5*winsize-3,...
                     0.5*winsize+2:1.5*winsize-3))));
-                if size(x1,1)>1 || size(y1,1)>1 
-		  x1=round(sum(x1.*([1:length(x1)]'))./sum(x1));
-		  y1=round(sum(y1.*([1:length(y1)]'))./sum(y1));
-		end
+                x1a=x1; y1a=y1;
+                if size(x1,1)>1 || size(y1,1)>1
+                    x1=round(sum(x1.*([1:length(x1)]'))./sum(x1));
+                    y1=round(sum(y1.*([1:length(y1)]'))./sum(y1));
+                    if x1<=2 || y1<=2
+                        x1=x1+5; y1=y1+5;
+                    end
+                end
                 % Interpolate to find the peak position at subpixel resolution,
                 % using three point curve fit function INTPEAK.
                 % X0,Y0 now denotes the displacements.
 %                 [x0,y0]=intpeak1(x1,y1,R(y1,x1),R(y1,x1-1),R(y1,x1+1),...
 % 				R(y1-1,x1),R(y1+1,x1),2,winsize);
+                %save(['C:\RAleixo\PI-PTV\testes\' 'var1.mat'],'R','x1','y1','x1a','y1a')
                 [x0,y0]=intpeak(x1,y1,R,SubPixMethod,winsize);
-
+                %save(['C:\RAleixo\PI-PTV\testes\' 'var2.mat'],'R','x1','y1','x1a','y1a')
                 R2=R;
                 R2(y1-3:y1+3,x1-3:x1+3)=NaN;
                 [p2_y2,p2_x2]=find(R2==max(max(R2( 0.5*N+2:1.5*N-3,0.5*M+2:1.5*M-3))));

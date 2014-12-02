@@ -1,4 +1,4 @@
-function [x,y,u,v,SnR,Pkh,u2]=singlepass(im1,im2,winsize,Dt,overlap,maske)
+function [x,y,u,v,SnR,Pkh,u2]=singlepass(im1,im2,winsize,Dt,overlap,SubPixMethod,maske)
 %SINGLEPASS - Particle Image Velocimetry with fixed interrogation regions.
 %
 %function [x,y,u,v,snr,pkh]=singlepass2(im1,im2,winsize,Dt,overlap,mask)
@@ -82,7 +82,13 @@ for jj=1:(1-overlap)*winsize:size(A,1)-winsize+1
                 R=xcorrf2(C,D)./(winsize*winsize*stad1*stad2);
                 % Correct for displacement bias
                 R=R./BiCor;    
-                % Locate the highest point   
+                % Locate the highest point
+                save(['C:\RAleixo\PI-PTV\testes\' 'var.mat'],'R','BiCor','winsize');
+                %%check how many maxima
+                if size(findpeaks(max(R(0.5*winsize+2:1.5*winsize-3,0.5*winsize+2:1.5*winsize-3))),2)>1
+                    
+                
+                
                 [y1,x1]=find(R==max(max(R(0.5*winsize+2:1.5*winsize-3,...
                     0.5*winsize+2:1.5*winsize-3))));
                 if size(x1,1)>1 || size(y1,1)>1 
@@ -130,15 +136,15 @@ for jj=1:(1-overlap)*winsize:size(A,1)-winsize+1
 
     end
     % Display calculation time
-    if size(sta,1)<=1   
-      fprintf('\r No. of vectors: %d', (cj1-1)*(ci1)+ci1-1 -sum(isnan(u(:))))
-      fprintf(' , Seconds taken: %f', toc); %etime(clock,t0));
-    else
-      if isempty(findstr(sta(end).name,'matptv'))   
-	fprintf('\r No. of vectors: %d', (cj1-1)*(ci1)+ci1-1 -sum(isnan(u(:))))
-	fprintf(' , Seconds taken: %f', toc); %etime(clock,t0));
-      end
-    end  
+%     if size(sta,1)<=1   
+%       fprintf('\r No. of vectors: %d', (cj1-1)*(ci1)+ci1-1 -sum(isnan(u(:))))
+%       fprintf(' , Seconds taken: %f', toc); %etime(clock,t0));
+%     else
+%       if isempty(findstr(sta(end).name,'matptv'))   
+% 	fprintf('\r No. of vectors: %d', (cj1-1)*(ci1)+ci1-1 -sum(isnan(u(:))))
+% 	fprintf(' , Seconds taken: %f', toc); %etime(clock,t0));
+%       end
+%     end  
     
     ci1=1;
     cj1=cj1+1;
